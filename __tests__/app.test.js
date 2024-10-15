@@ -105,6 +105,7 @@ describe("GET /api/articles", () => {
           expect(typeof article.created_at).toBe("string");
           expect(typeof article.votes).toBe("number");
           expect(typeof article.article_img_url).toBe("string");
+          expect(typeof article.comment_count).toBe("number");
         });
       });
   });
@@ -115,7 +116,6 @@ describe("GET /api/articles", () => {
       .then(({ body }) => {
         const articles = body.articles;
         articles.forEach((article) => {
-          expect(typeof article.comment_count).toBe("number");
           if (article.article_id === 3) {
             expect(article.comment_count).toBe(2);
           }
