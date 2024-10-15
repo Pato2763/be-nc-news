@@ -78,5 +78,19 @@
         }
       ]
     }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "adds a new comment taking a username and a body on the body of the request",
+    "queries": [],
+    "exampleResponse": {
+      "newComment": {
+        "comment_id": 5,
+        "body": "I hate streaming noses",
+        "article_id": 1,
+        "author": "icellusedkars",
+        "votes": 0,
+        "created_at": "2020-11-03T21:00:00.000Z"
+      }
+    }
   }
 }

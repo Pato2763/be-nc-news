@@ -183,3 +183,47 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 });
+describe("POST /api/articles/:article_id/comments", () => {
+  test("POST 201 the post is successfuly posted", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({ username: "butter_bridge", body: "this is the body" })
+      .expect(201)
+      .then(({ body }) => {
+        const comment = body.newComment;
+        expect(typeof comment.article_id).toBe("number");
+        expect(comment.votes).toBe(0);
+        expect(typeof comment.created_at).toBe("string");
+        expect(comment.author).toBe("butter_bridge");
+        expect(comment.body).toBe("this is the body");
+        expect(typeof comment.comment_id).toBe("number");
+      });
+  });
+  test("POST 400 article_ID is not a valid format", () => {
+    return request(app)
+      .post("/api/articles/invalidID/comments")
+      .send({ username: "butter_bridge", body: "this is the body" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  test("POST 404 article_ID is in the correct format but isn't an ID that exists", () => {
+    return request(app)
+      .post("/api/articles/9999/comments")
+      .send({ username: "butter_bridge", body: "this is the body" })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("parameter not found");
+      });
+  });
+  test("POST 400 one of the properties in the body are not included", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({ body: "this is the body" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("A property on the body is missing");
+      });
+  });
+});
