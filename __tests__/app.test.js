@@ -131,3 +131,55 @@ describe("GET /api/articles", () => {
       });
   });
 });
+describe("GET /api/articles/:article_id/comments", () => {
+  test("GET 200 should serve an array of comments when there are comments with the given article_id", () => {
+    return request(app)
+      .get("/api/articles/3/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        expect(comments.length).toBe(2);
+        comments.forEach((comment) => {
+          expect(comment.article_id).toBe(3);
+          expect(typeof comment.votes).toBe("number");
+          expect(typeof comment.created_at).toBe("string");
+          expect(typeof comment.author).toBe("string");
+          expect(typeof comment.body).toBe("string");
+          expect(typeof comment.comment_id).toBe("number");
+        });
+      });
+  });
+  test("GET 200 should serve an empty array of comments when passed an article_id that exists but doesn't have any comments", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments.length).toBe(0);
+      });
+  });
+  test("GET 200 the results should be ordered with most recent comment first", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        expect(comments).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("GET 400 the passed ID is invalid", () => {
+    return request(app)
+      .get("/api/articles/InvalidID/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  test("GET 404 the passed ID is a valid ID but it wasn't found", () => {
+    return request(app)
+      .get("/api/articles/9999/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("No article with given index");
+      });
+  });
+});
