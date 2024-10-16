@@ -271,3 +271,24 @@ describe("PATCH /api/articles/:article_id.", () => {
       });
   });
 });
+describe(" DELETE /api/comments/:comment_id", () => {
+  test("DELETE 204 successfuly delete the comment", () => {
+    return request(app).delete("/api/comments/1").expect(204);
+  });
+  test("DELETE 400 passed an ID which isn't in the correct format", () => {
+    return request(app)
+      .delete("/api/comments/invalidID")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  test("DELETE 404 passed an ID  which isn't in the database", () => {
+    return request(app)
+      .delete("/api/comments/9999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid ID");
+      });
+  });
+});
