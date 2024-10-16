@@ -12,6 +12,7 @@ const {
   postComment,
   deleteComment,
 } = require("./controllers/comments-controller.js");
+const { getUsers } = require("./controllers/users-controller.js");
 
 app.get("/api", getEndpoints);
 
@@ -30,6 +31,8 @@ app.post("/api/articles/:article_id/comments", postComment);
 app.patch("/api/articles/:article_id", patchArticle);
 
 app.delete("/api/comments/:comment_id", deleteComment);
+
+app.get("/api/users", getUsers);
 
 app.all("*", (req, res) => {
   res.status(404).send({ msg: "route not found" });
