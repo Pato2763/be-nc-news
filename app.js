@@ -8,7 +8,10 @@ const {
   getArticleComments,
   patchArticle,
 } = require("./controllers/aritcles-controller.js");
-const { postComment } = require("./controllers/comments-controller.js");
+const {
+  postComment,
+  deleteComment,
+} = require("./controllers/comments-controller.js");
 
 app.get("/api", getEndpoints);
 
@@ -25,6 +28,8 @@ app.use(express.json());
 app.post("/api/articles/:article_id/comments", postComment);
 
 app.patch("/api/articles/:article_id", patchArticle);
+
+app.delete("/api/comments/:comment_id", deleteComment);
 
 app.all("*", (req, res) => {
   res.status(404).send({ msg: "route not found" });
