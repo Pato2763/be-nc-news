@@ -49,3 +49,32 @@ exports.fetchArticleComments = (id) => {
       return rows;
     });
 };
+exports.insertArticle = (id, incVotes) => {
+  return Promise.all([
+    incVotes,
+    db.query(
+      `
+    SELECT article_id, votes FROM articles
+    WHERE article_id = $1`,
+      [id]
+    ),
+  ])
+    .then(([incVotes, { rows }]) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "invalid ID" });
+      }
+      const article = rows[0];
+      const newVotes = article.votes + incVotes;
+      return db.query(
+        `
+        UPDATE articles
+        SET votes = $1
+        WHERE article_id = $2
+        RETURNING *`,
+        [newVotes, article.article_id]
+      );
+    })
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};
