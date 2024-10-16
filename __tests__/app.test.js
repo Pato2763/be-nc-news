@@ -227,3 +227,47 @@ describe("POST /api/articles/:article_id/comments", () => {
       });
   });
 });
+describe("PATCH /api/articles/:article_id.", () => {
+  test("PATCH 200 the patch is successful", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: 5 })
+      .expect(200)
+      .then(({ body }) => {
+        const article = body.article;
+        expect(typeof article.author).toBe("string");
+        expect(typeof article.title).toBe("string");
+        expect(article.article_id).toBe(1);
+        expect(typeof article.topic).toBe("string");
+        expect(typeof article.created_at).toBe("string");
+        expect(article.votes).toBe(105);
+        expect(typeof article.article_img_url).toBe("string");
+      });
+  });
+  test("PATCH 400 the ID given is not in the corresct format", () => {
+    return request(app)
+      .patch("/api/articles/invalidId")
+      .send({ inc_votes: 5 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  test("PATCH 404 the ID given is not in the article table", () => {
+    return request(app)
+      .patch("/api/articles/9999")
+      .send({ inc_votes: 5 })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("invalid ID");
+      });
+  });
+  test("PATCH 400 the body doesn't have an inc_votes key", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+});
