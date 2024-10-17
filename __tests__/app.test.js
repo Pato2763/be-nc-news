@@ -307,7 +307,7 @@ describe("GET /api/users", () => {
       });
   });
 });
-describe.only("GET /api/articles (sorting queries)", () => {
+describe("GET /api/articles (sorting queries)", () => {
   test("GET 200 ?sort_by=article_id", () => {
     return request(app)
       .get("/api/articles?sort_by=article_id")
@@ -351,6 +351,36 @@ describe.only("GET /api/articles (sorting queries)", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Invalid sort_by");
+      });
+  });
+});
+describe("GET /api/articles (topic query)", () => {
+  test("GET 200 ?topic=mitch", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        articles.forEach((article) => {
+          expect(article.topic).toBe("mitch");
+        });
+      });
+  });
+  test("GET 200 ?topic=paper", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body }) => {
+        articles = body.articles;
+        expect(articles.length).toBe(0);
+      });
+  });
+  test("GET 400 ?topic=invalidTopic", () => {
+    return request(app)
+      .get("/api/articles?topic=invlaidTopic")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("invalid topic");
       });
   });
 });
