@@ -1,4 +1,5 @@
 const db = require("../db/connection.js");
+const format = require("pg-format");
 
 exports.fetchArticlesbyId = (id) => {
   return db
@@ -18,24 +19,45 @@ exports.fetchArticlesbyId = (id) => {
     });
 };
 
-exports.fetchArticles = () => {
-  return db
-    .query(
-      `SELECT
+exports.fetchArticles = (sort_by = `created_at`, order = `DESC`) => {
+  const allowedSorts = [
+    "article_id",
+    "title",
+    "topic",
+    "author",
+    "body",
+    "created_at",
+    "votes",
+    "article_img_url",
+  ];
+  order = order.toUpperCase();
+  const allowedOrder = ["DESC", "ASC"];
+
+  if (!allowedSorts.includes(sort_by)) {
+    return Promise.reject({ status: 400, msg: "Invalid sort_by" });
+  }
+
+  if (!allowedOrder.includes(order)) {
+    return Promise.reject({ status: 400, msg: "Invalid order" });
+  }
+  let queryStr = `SELECT
     articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.article_img_url, articles.votes,
     COUNT(comments.comment_id) AS comment_count
     FROM articles
     LEFT JOIN comments
     on articles.article_id = comments.article_id
     GROUP BY articles.article_id, articles.title,articles.topic, articles.author, articles.created_at, articles.article_img_url
-    ORDER BY created_at DESC;`
-    )
-    .then(({ rows }) => {
-      return rows.map((row) => {
-        row.comment_count = Number(row.comment_count);
-        return row;
-      });
+    ORDER BY`;
+
+  const OrderByStr = format(` %I %s`, sort_by, order);
+  queryStr += OrderByStr;
+
+  return db.query(queryStr).then(({ rows }) => {
+    return rows.map((row) => {
+      row.comment_count = Number(row.comment_count);
+      return row;
     });
+  });
 };
 exports.fetchArticleComments = (id) => {
   return db

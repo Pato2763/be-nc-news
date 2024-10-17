@@ -307,3 +307,50 @@ describe("GET /api/users", () => {
       });
   });
 });
+describe.only("GET /api/articles (sorting queries)", () => {
+  test("GET 200 ?sort_by=article_id", () => {
+    return request(app)
+      .get("/api/articles?sort_by=article_id")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toBeSortedBy("article_id", {
+          descending: true,
+        });
+      });
+  });
+  test("GET 200 ?order=ASC", () => {
+    return request(app)
+      .get("/api/articles?order=ASC")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toBeSortedBy("created_at", { ascending: true });
+      });
+  });
+  test("GET 200 ?order=ASC?sort_by=author", () => {
+    return request(app)
+      .get("/api/articles?order=ASC&sort_by=author")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toBeSortedBy("author", { ascending: true });
+      });
+  });
+  test("GET 400 ?order=invalidOrder", () => {
+    return request(app)
+      .get("/api/articles?order=invalidOrder")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid order");
+      });
+  });
+  test("GET 400 ?sort_by=invalidSortBy", () => {
+    return request(app)
+      .get("/api/articles?sort_by=invalidSortBy")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid sort_by");
+      });
+  });
+});
