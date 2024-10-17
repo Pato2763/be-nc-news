@@ -4,6 +4,7 @@ const {
   fetchArticleComments,
   insertArticle,
 } = require("../models/articles-model.js");
+const { fetchTopicBySlug } = require("../models/topics-model.js");
 
 exports.getArtclesbyId = (req, res, next) => {
   const { article_id } = req.params;
@@ -16,14 +17,27 @@ exports.getArtclesbyId = (req, res, next) => {
     });
 };
 exports.getArticles = (req, res, next) => {
-  const { sort_by, order } = req.query;
-  fetchArticles(sort_by, order)
-    .then((articles) => {
-      res.status(200).send({ articles: articles });
-    })
-    .catch((err) => {
-      next(err);
-    });
+  const { sort_by, order, topic } = req.query;
+  if (!topic) {
+    fetchArticles(sort_by, order, topic)
+      .then((articles) => {
+        res.status(200).send({ articles: articles });
+      })
+      .catch((err) => {
+        next(err);
+      });
+  } else {
+    fetchTopicBySlug(topic)
+      .then(() => {
+        return fetchArticles(sort_by, order, topic);
+      })
+      .then((articles) => {
+        res.status(200).send({ articles: articles });
+      })
+      .catch((err) => {
+        next(err);
+      });
+  }
 };
 
 exports.getArticleComments = (req, res, next) => {
