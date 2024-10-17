@@ -88,6 +88,15 @@ describe("GET /api/articles/:article_id", () => {
         expect(body.msg).toBe("No article with given index");
       });
   });
+  test("GET 200 comment_count", () => {
+    return request(app)
+      .get("/api/articles/3?comment_count")
+      .expect(200)
+      .then(({ body }) => {
+        const article = body.article;
+        expect(article.comment_count).toBe(2);
+      });
+  });
 });
 
 describe("GET /api/articles", () => {

@@ -8,7 +8,7 @@ const { fetchTopicBySlug } = require("../models/topics-model.js");
 
 exports.getArtclesbyId = (req, res, next) => {
   const { article_id } = req.params;
-  fetchArticlesbyId(article_id)
+  fetchArticlesbyId(article_id, req.query)
     .then(([article]) => {
       res.status(200).send({ article: article });
     })
@@ -42,7 +42,7 @@ exports.getArticles = (req, res, next) => {
 
 exports.getArticleComments = (req, res, next) => {
   const { article_id } = req.params;
-  Promise.all([article_id, fetchArticlesbyId(article_id)])
+  Promise.all([article_id, fetchArticlesbyId(article_id, {})])
     .then(([article_id, article]) => {
       return fetchArticleComments(article_id);
     })
