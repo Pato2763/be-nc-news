@@ -69,4 +69,4 @@ this will be connected to the 9090 port.
 
 This portfolio project was created as part of a Digital Skills Bootcamp in Software Engineering provided by [Northcoders](https://northcoders.com/). For more information on me
 
-my LinkedIn can be found [here](www.linkedin.com/in/patd2763). I'd be very happy to connect with anyone who's stumbled across this repo
+my LinkedIn can be found [here](https://www.linkedin.com/in/patd2763). I'd be very happy to connect with anyone who's stumbled across this repo
