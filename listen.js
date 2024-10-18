@@ -1,6 +1,4 @@
-const config = {};
+const app = require("./app.js");
+const { PORT = 9090 } = process.env;
 
-if (ENV === "production") {
-  config.connectionString = process.env.DATABASE_URL;
-  config.max = 2;
-}
+app.listen(PORT, () => console.log(`Listening on ${PORT}...`));
